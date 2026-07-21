@@ -16,7 +16,9 @@ export default function App() {
     if (!file) return
     try {
       setError('')
-      setProject(await importWorkbook(file))
+      const imported = await importWorkbook(file)
+      setProject(imported)
+      setActive(1)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Excel 导入失败')
     }
@@ -31,7 +33,7 @@ export default function App() {
     <main className="page">
       <section className="page-heading"><h2>{steps[active]}</h2><span className="count-chip">{project?.products.length ?? 0} 款产品</span></section>
       {error && <div className="error-banner">{error}</div>}
-      {!project ? <section className="empty-state"><h3>导入产品数据</h3><p>选择包含产品图片、SKU、上架年月、销量和售价的 Excel 文件。</p><label className="primary" role="button">选择 Excel 文件<input type="file" accept=".xlsx" onChange={(event) => load(event.target.files?.[0])} /></label></section>
+      {!project ? <section className="empty-state"><h3>导入产品数据</h3><p>选择包含产品图片、SKU、上架年月、销量和售价的 Excel 文件。导入完成后自动生成图表。</p><label className="primary" role="button">选择 Excel 文件<input type="file" accept=".xlsx" onChange={(event) => load(event.target.files?.[0])} /></label></section>
         : active === 0 ? <DataEditorPage products={project.products} onChange={(products) => setProject({ ...project, products, updatedAt: new Date().toISOString() })} />
         : active === 1 ? <ChartPage products={project.products} />
         : active === 2 ? <section className="analysis-list">{analyzeProducts(project.products).map((insight) => <article className="insight" key={insight.id}><h3>{insight.title}</h3><p>{insight.text}</p></article>)}</section>
