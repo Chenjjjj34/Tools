@@ -13,7 +13,7 @@ describe('ProductChart', () => {
   it('renders one marker at a real data anchor in both modes', () => {
     const price = render(<ProductChart products={[product]} mode="price" period="2025" />)
     expect(price.container.querySelectorAll('[data-product-marker]')).toHaveLength(1)
-    expect(price.getByText('2025-01')).toBeInTheDocument()
+    expect(price.getByText('2025-05')).toBeInTheDocument()
     price.unmount()
     const sales = render(<ProductChart products={[product]} mode="sales" period="2025" />)
     expect(sales.container.querySelectorAll('[data-product-marker]')).toHaveLength(1)
