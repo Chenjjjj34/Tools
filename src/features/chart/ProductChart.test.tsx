@@ -29,4 +29,13 @@ describe('ProductChart', () => {
     expect(new Set(positions).size).toBe(3)
     expect(positions[0]).toBe(originalPosition)
   })
+
+  it('keeps low-sales product cards above the x axis', () => {
+    const lowSales = { ...product, id: 'low', sales: { ...product.sales, '2025': 0 } }
+    const highSales = { ...product, id: 'high', launchMonth: 12, sales: { ...product.sales, '2025': 1000 } }
+    const view = render(<ProductChart products={[lowSales, highSales]} mode="sales" period="2025" />)
+    const lowCard = view.container.querySelector<HTMLElement>('.chart-card-group')
+
+    expect(Number.parseFloat(lowCard?.style.bottom ?? '0')).toBeGreaterThanOrEqual(30)
+  })
 })
