@@ -13,7 +13,7 @@ export function ProductChart({ products, mode, period }: { products: Product[]; 
   const yTicks = Array.from({ length: 6 }, (_, index) => minY + range * index / 5)
   const xTicks = Array.from({ length: Math.floor(xRange * 4) + 1 }, (_, index) => minX + index / 4).filter((value) => value <= maxX)
   const anchors = points.map((point) => ({ x: 4 + (point.x - minX) / xRange * 92, y: 5 + (point.y - minY) / range * 88 }))
-  const displayPositions = placeWithoutOverlap(anchors)
+  const displayPositions = placeWithoutOverlap(anchors, mode === 'sales' ? 30 : 8)
 
   return <div className="product-chart">
     <div className="axis-title-y">{mode === 'price' ? '售价（€）' : `${period} 销量`}</div>
@@ -38,14 +38,14 @@ export function ProductChart({ products, mode, period }: { products: Product[]; 
   </div>
 }
 
-function placeWithoutOverlap(anchors: Array<{ x: number; y: number }>) {
+function placeWithoutOverlap(anchors: Array<{ x: number; y: number }>, minY: number) {
   const placed: Array<{ x: number; y: number }> = []
   const candidates: Array<[number, number]> = [[0, 0]]
   for (let radius = 1; radius <= 5; radius += 1) {
     candidates.push([0, radius * 16], [0, -radius * 16], [radius * 9, 0], [-radius * 9, 0], [radius * 9, radius * 16], [-radius * 9, radius * 16], [radius * 9, -radius * 16], [-radius * 9, -radius * 16])
   }
   for (const anchor of anchors) {
-    const candidate = candidates.map(([dx, dy]) => ({ x: Math.min(95, Math.max(5, anchor.x + dx)), y: Math.min(92, Math.max(8, anchor.y + dy)) })).find((position) => placed.every((other) => Math.abs(other.x - position.x) >= 8 || Math.abs(other.y - position.y) >= 14))
+    const candidate = candidates.map(([dx, dy]) => ({ x: Math.min(95, Math.max(5, anchor.x + dx)), y: Math.min(92, Math.max(minY, anchor.y + dy)) })).find((position) => placed.every((other) => Math.abs(other.x - position.x) >= 8 || Math.abs(other.y - position.y) >= 14))
     placed.push(candidate ?? { x: anchor.x, y: anchor.y })
   }
   return placed
